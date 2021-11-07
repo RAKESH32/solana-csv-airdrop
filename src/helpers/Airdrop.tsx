@@ -56,6 +56,17 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
     )
   );
 
+  instructions.push(
+    Token.createTransferInstruction(
+      TOKEN_PROGRAM_ID,
+      fromTokenAccount.address,
+      associatedDestinationTokenAddr,
+      wallet.publicKey,
+      [],
+      amount
+    )
+  );
+
   const transaction = new web3.Transaction().add(...instructions);
   transaction.feePayer = wallet.publicKey;
   transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
