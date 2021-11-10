@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { getTokenDetails } from "../helpers/Airdrop";
+import { state } from '../State';
 
 type Event = "connect" | "disconnect";
 
@@ -26,10 +28,14 @@ const ConnectToPhantom = () => {
     useEffect(() => {
         phantom?.on("connect", () => {
           setConnected(true);
+          state.connected = true;
+          getTokenDetails((window as any).solana);
+
         });
     
         phantom?.on("disconnect", () => {
           setConnected(false);
+          state.connected = false;
         });
       }, [phantom]);
 

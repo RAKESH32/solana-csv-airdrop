@@ -2,13 +2,13 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { transfer } from "../helpers/Airdrop";
 import * as web3 from "@solana/web3.js";
-
+import { state } from "../State";
 
 const Papa = require('papaparse');
 
 function ReactDropZone() {
 
-    var connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+    var connection = state.connection;
 
     const [fileStatus, setFileStatus] = useState<string>("");
     const [fileProgress, setFileProgress] = useState(0);

@@ -89,3 +89,24 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
 
   await connection.confirmTransaction(transactionSignature);
 }
+
+export async function getTokenDetails(wallet: Wallet)
+{
+  const data =[];
+  const TokenData = await state.connection.getParsedTokenAccountsByOwner(wallet.publicKey, {
+    programId: new web3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+  }); 
+
+  for(var i=0; i<TokenData.value.length; i++)
+  {
+      data.push({
+          TName: TokenData.value[i].account.data.parsed.info.mint,
+          TAcc:TokenData.value[i].pubkey.toString(),
+          Balance:TokenData.value[i].account.data.parsed.info.tokenAmount.amount
+      })
+  }
+  state.walletData=data;
+
+  
+
+}
