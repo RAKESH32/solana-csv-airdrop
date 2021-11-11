@@ -8,7 +8,8 @@ interface State {
     connected:boolean;
     walletData:any[];
     selectedToken:string;
-
+    result:string;
+    transferResult:any[];
 }
 
 export const state:State= {
@@ -18,4 +19,6 @@ export const state:State= {
     connected:false,
     walletData:[],
     selectedToken:"",
+    result:"",
+    transferResult:[],
 };

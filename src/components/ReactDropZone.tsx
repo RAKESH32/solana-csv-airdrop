@@ -28,14 +28,20 @@ function ReactDropZone() {
                    //console.log(results);
                    console.log(results.data);
                    setFileProgress(50);
-                   results.data.forEach(function(obj: { accountNo: string; amount: number; }) {
+                   const resultData =[];
+                   results.data.forEach(async function(obj: { accountNo: string; amount: number; }) {
                     setFileProgress(70);
-                transfer("C9A1ocQ4erCTzdCvrFXZknLk3DeaQgtYWGUPvEtMXd4A",(window as any).solana,obj.accountNo,connection,obj.amount);
+                
+                state.transferResult=[];
+                transfer("C9A1ocQ4erCTzdCvrFXZknLk3DeaQgtYWGUPvEtMXd4A",(window as any).solana,obj.accountNo,connection,obj.amount,callback);
+                
                 setFileStatus("File Reading Done");
                 setFileProgress(100);
+                
             });
                 };
                 reader.readAsBinaryString(file);
+                console.log(resultData);
             });
         },
         []
@@ -68,3 +74,18 @@ function ReactDropZone() {
 }
 
 export default ReactDropZone
+function resultData(resultData: any) {
+    throw new Error("Function not implemented.");
+}
+
+function callback(accountNo:string,amount:number,result:string,error:string) {
+
+    state.transferResult.push({
+        ReceiverAcc: accountNo,
+        Amt:amount,
+        Result: result,
+        Details: error
+    });
+    
+}
+

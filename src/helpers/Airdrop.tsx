@@ -4,19 +4,22 @@ import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { web3, Wallet } from "@project-serum/anchor";
 import { state } from "../State";
 
-export async function transfer(tokenMintAddress: string, wallet: Wallet, to: string, connection: web3.Connection, amount: number) {
 
-  //public key of the token
+
+export async function transfer(tokenMintAddress: string, wallet: Wallet, to: string, connection: web3.Connection, amount: number, callback:(acc:string,amt:number,res:string,error:string) => void) {
+
+  try{
+  //public key form of the token
   const mintPublicKey = new web3.PublicKey(tokenMintAddress);   
 
   const mintToken = new Token(
     connection,
     mintPublicKey,
     TOKEN_PROGRAM_ID,
-    wallet.payer // the wallet owner will pay to transfer and to create recipients associated token account if it does not yet exist.
+    wallet.payer 
   );
   
-  //sender associate account
+  //fetch sender associate(token) account
   const fromTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(
     wallet.publicKey
   );
@@ -31,10 +34,7 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
     destPublicKey 
   );
 
-  //const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
-  const receiverAccount = await connection.getParsedTokenAccountsByOwner(wallet.publicKey, {
-    programId: new web3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-  });
+  const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
   
   var instructions: web3.TransactionInstruction[] = []; 
 
@@ -67,16 +67,23 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
   state.instructions =[];
   state.instructions=instructions;
 
+  callback(to,amount,"Success","");
+    }
+    catch(error)
+    {
+      console.log("airdrop error");
+      callback(to,amount,"Failed","");
+      console.log(state.transferResult);
+    }
+
     }
 
     export async function executeInst(wallet: Wallet, connection: web3.Connection){
 
       const instructions: web3.TransactionInstruction[] = state.instructions;  
-
-
-  const transaction = new web3.Transaction().add(...instructions);
-  transaction.feePayer = wallet.publicKey;
-  transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    const transaction = new web3.Transaction().add(...instructions);
+    transaction.feePayer = wallet.publicKey;
+    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
   
   let signedTrans = await wallet.signTransaction(transaction);
   const transactionSignature = await connection.sendRawTransaction(
@@ -88,6 +95,8 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
   console.log(transactionSignature);
 
   await connection.confirmTransaction(transactionSignature);
+
+
 }
 
 export async function getTokenDetails(wallet: Wallet)
