@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { transfer } from "../helpers/Airdrop";
+import { executeInst, transfer } from "../helpers/Airdrop";
 import * as web3 from "@solana/web3.js";
 import { state } from "../State";
 
@@ -54,11 +54,13 @@ function ReactDropZone() {
     });
 
     return (
-        <div className="pt-28 flex justify-center h-5/6" >
-            <div {...getRootProps()} className="w-80 bg-gray-200 rounded-md cursor-pointer focus:outline-none flex justify-center shadow-2xl">
+        
+        <div  >
+           
+            <div {...getRootProps()} className="bg-blue-100">
                 <input {...getInputProps()} />
 
-                <div className={"h-2/4 flex flex-col items-center justify-center border-2 border-dashed rounded-xl mt-14 p-14 shadow-inner bg-indigo-100" + (isDragReject === true ? "border-red-500 bg-red-50" : "") + (isDragAccept === true ? "border-green-500 bg-green-50" : "")}>
+                <div className={"h-2/4 flex flex-col items-center justify-center border-2 border-dashed rounded-xl shadow-inner bg-indigo-100 p-20" + (isDragReject === true ? "border-red-500 bg-red-50" : "") + (isDragAccept === true ? "border-green-500 bg-green-50" : "")}>
                     <img src="/images/upload-icon.png" alt="upload" className="w-20 h-20" />
 
                     {isDragReject ? <p>File Format is not accepted</p> :
@@ -67,6 +69,11 @@ function ReactDropZone() {
                         </div>}
 
                 </div>
+                        
+                
+                </div>
+                <div className="flex justify-center pt-7 rounded">
+                <a onClick={() => executeInst((window as any).solana,state.connection)} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 inline-flex items-center rounded cursor-pointer shadow-2xl">Initiate Airdrop</a>
             </div>
 
         </div>

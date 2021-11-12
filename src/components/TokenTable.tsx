@@ -3,7 +3,7 @@ import MaterialTable from 'material-table'
 import { state } from '../State';
 import { Button } from '@material-ui/core';
 
- function TokenTable(props: any) {
+ function TokenTable({selectToken}: any) {
 
     
     const columns=[
@@ -19,10 +19,11 @@ import { Button } from '@material-ui/core';
 
         setSelectedRow(id);
         state.selectedToken = tokenName;
+        selectToken(tokenName);
 
     }
 
-    return (props.trigger) ? (
+    return   (
         <div>
             <MaterialTable columns={columns} data ={state.walletData}  onRowClick={((evt, selectedRow) => afterRowClick(selectedRow.tableData.id,selectedRow.TName))} options={{search:false, paginationType:"stepped", showFirstLastPageButtons: false, paginationPosition:"bottom", addRowPosition:"first",
         rowStyle: rowData => ({
@@ -30,7 +31,7 @@ import { Button } from '@material-ui/core';
         })}}  />
         
         </div>
-    ) : <div></div>;
+    ) ;
 }
 
 export default TokenTable
