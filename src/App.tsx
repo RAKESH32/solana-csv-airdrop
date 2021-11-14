@@ -9,12 +9,19 @@ import TokenTable from './components/TokenTable';
 import { Button } from '@material-ui/core';
 import { state } from './State';
 import ResultTable from './components/ResultTable';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'
+import 'tippy.js/themes/material.css';
+import 'tippy.js/animations/scale.css';
+import { ProgressBarUI } from './components/ProgressBarUI';
+
 
 function App() {
 
   const [tokenDisplay,setTokenDisplay] = useState("hidden");
   const [resultDisplay,setResultDisplay] = useState("hidden");
-  const[selectedToken,setSelectedToken]=useState("ss");
+  const[selectedToken,setSelectedToken]=useState("");
+  
 
   function WDetailBtnClick() {
      setTokenDisplay("block");
@@ -53,15 +60,15 @@ function App() {
     
     <div className="h-5/6 w-4/12 bg-gray-200 rounded-md cursor-pointer focus:outline-none items-center shadow-2xl ml-96 mt-24 p-5">
     <a onClick={WDetailBtnClick} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex cursor-pointer mt-4 m-2 shadow-2xl">Token in Wallet</a>
+    {/* <span className="text-sm">Selected Token:</span> */}
+      <Tippy animation={'scale'} theme={'material'} interactive={true} followCursor={true} content={<div className="text-xs">{selectedToken}</div>} >
+    <div className="text-sm pl-24">Selected Token : {selectedToken.substring(0,5)+".."+selectedToken.substring(selectedToken.length-5,selectedToken.length-1)}</div>
+    </Tippy>
     <div className="mb-2 flex text-xs">
-    <span className="font-sans font-semibold">Selected_Token:</span>
-    <div className="rounded ml-1">C9A1o....MXd4A</div>
+     
     </div>
-    <div className="text-sm mt-2 bg-gray-900 text-gray-100 px-1 absoulte rounded bg-opacity-50 shadow-xl">C9A1ocQ4erCTzdCvrFXZknLk3DeaQgtYWGUPvEtMXd4A</div>
-    <script>
-      
-    </script>
    <ReactDropZone /> 
+   <div>{state.result}</div>
    <a onClick={RDetailBtnClick} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex cursor-pointer mt-4 ml-36 mb-5 mshadow-2xl">
           Result Table</a>
    </div>

@@ -27,7 +27,7 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
   const destPublicKey = new web3.PublicKey(to);
 
   // Get the derived address of the destination wallet which will hold the custom token
-  const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress(
+  const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress( 
     mintToken.associatedProgramId,
     mintToken.programId,
     mintPublicKey,
@@ -69,16 +69,18 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
 
   callback(to,amount,"Success","");
     }
-    catch(error)
+    catch(error:any)
     {
-      console.log("airdrop error");
-      callback(to,amount,"Failed","");
+      console.log(error);
+      callback(to,amount,"Failed",error.toString());
       console.log(state.transferResult);
     }
 
     }
 
     export async function executeInst(wallet: Wallet, connection: web3.Connection){
+
+      try{
 
       const instructions: web3.TransactionInstruction[] = state.instructions;  
     const transaction = new web3.Transaction().add(...instructions);
@@ -95,6 +97,13 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
   console.log(transactionSignature);
 
   await connection.confirmTransaction(transactionSignature);
+
+      }
+
+      catch(error)
+      {
+        console.log(error);
+      }
 
 
 }

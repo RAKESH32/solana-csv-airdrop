@@ -12,6 +12,8 @@ function ReactDropZone() {
 
     const [fileStatus, setFileStatus] = useState<string>("");
     const [fileProgress, setFileProgress] = useState(0);
+    const [airdropBtn,setAirdropBtn] = useState(false);
+    const [uploadedFile,setUploadedFile] = useState<string>("");
 
     const onDrop = useCallback(
         (acceptedFiles) => {
@@ -36,12 +38,13 @@ function ReactDropZone() {
                 transfer("C9A1ocQ4erCTzdCvrFXZknLk3DeaQgtYWGUPvEtMXd4A",(window as any).solana,obj.accountNo,connection,obj.amount,callback);
                 
                 setFileStatus("File Reading Done");
-                setFileProgress(100);
+                setAirdropBtn(true);
                 
             });
                 };
                 reader.readAsBinaryString(file);
                 console.log(resultData);
+                setUploadedFile(file.name);
             });
         },
         []
@@ -57,10 +60,10 @@ function ReactDropZone() {
         
         <div  >
            
-            <div {...getRootProps()} className="bg-blue-100">
+            <div {...getRootProps()} >
                 <input {...getInputProps()} />
 
-                <div className={"h-2/4 flex flex-col items-center justify-center border-2 border-dashed rounded-xl shadow-inner bg-indigo-100 p-20" + (isDragReject === true ? "border-red-500 bg-red-50" : "") + (isDragAccept === true ? "border-green-500 bg-green-50" : "")}>
+                <div className={"h-2/4 flex flex-col items-center justify-center border-2 border-dashed rounded-xl shadow-inner p-14 bg-indigo-100" + (isDragReject === true ? "m bg-red-100 " : "") + (isDragAccept === true ? "m bg-green-100 "  : "")}>
                     <img src="/images/upload-icon.png" alt="upload" className="w-20 h-20" />
 
                     {isDragReject ? <p>File Format is not accepted</p> :
@@ -69,11 +72,12 @@ function ReactDropZone() {
                         </div>}
 
                 </div>
-                        
+                <div className={"mt-4 shadow-2xl w-full h-16 flex items-center justify-center bg-indigo-100 "+(airdropBtn === true ? " ":" hidden")}><img src="/images/csv1.png" alt="csv" className="w-9 h-9" /> <span className="pl-7 "> File <b> {uploadedFile} </b>Uploaded</span></div>
+ 
                 
                 </div>
                 <div className="flex justify-center pt-7 rounded">
-                <a onClick={() => executeInst((window as any).solana,state.connection)} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 inline-flex items-center rounded cursor-pointer shadow-2xl">Initiate Airdrop</a>
+                <a onClick={() => executeInst((window as any).solana,state.connection)} className={"  text-white py-2 px-4 inline-flex items-center rounded cursor-pointer shadow-2xl   " +(airdropBtn === true ? "bg-indigo-600 hover:bg-indigo-700 ":"bg-gray-400 pointer-events-none") }>Initiate Airdrop</a>
             </div>
 
         </div>
@@ -91,8 +95,7 @@ function callback(accountNo:string,amount:number,result:string,error:string) {
         ReceiverAcc: accountNo,
         Amt:amount,
         Result: result,
-        Details: error
+        Error: error
     });
     
 }
-

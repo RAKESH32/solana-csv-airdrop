@@ -34,6 +34,7 @@ const ConnectToPhantom = () => {
         });
     
         phantom?.on("disconnect", () => {
+         
           setConnected(false);
           state.connected = false;
         });
