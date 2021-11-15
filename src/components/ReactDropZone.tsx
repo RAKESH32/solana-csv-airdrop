@@ -6,7 +6,7 @@ import { state } from "../State";
 
 const Papa = require('papaparse');
 
-function ReactDropZone() {
+function ReactDropZone({setThirdStep}: any) {
 
     var connection = state.connection;
 
@@ -15,8 +15,16 @@ function ReactDropZone() {
     const [airdropBtn,setAirdropBtn] = useState(false);
     const [uploadedFile,setUploadedFile] = useState<string>("");
 
+
+    function airdropInitate()
+    {
+        executeInst((window as any).solana,state.connection);
+        setThirdStep(4);
+    }
+
     const onDrop = useCallback(
         (acceptedFiles) => {
+            console.log(acceptedFiles);
             acceptedFiles.forEach((file: File) => {
                 const reader = new FileReader();
                 reader.abort = () => setFileStatus("File Reading Aborted");
@@ -35,16 +43,21 @@ function ReactDropZone() {
                     setFileProgress(70);
                 
                 state.transferResult=[];
-                transfer("C9A1ocQ4erCTzdCvrFXZknLk3DeaQgtYWGUPvEtMXd4A",(window as any).solana,obj.accountNo,connection,obj.amount,callback);
+                transfer(state.selectedToken,(window as any).solana,obj.accountNo,connection,obj.amount,callback);
                 
                 setFileStatus("File Reading Done");
-                setAirdropBtn(true);
+                if(state.selectedToken !="")
+                {
+                    setAirdropBtn(true);
+                }
+                
                 
             });
                 };
                 reader.readAsBinaryString(file);
                 console.log(resultData);
                 setUploadedFile(file.name);
+                setThirdStep(3);
             });
         },
         []
@@ -53,7 +66,7 @@ function ReactDropZone() {
     const { getRootProps, getInputProps, isDragAccept, isDragReject } = useDropzone({
         onDrop,
         multiple: false,
-        accept: "application/vnd.ms-excel"
+        accept: "application/vnd.ms-excel,text/plain,text/x-csv,text/csv"
     });
 
     return (
@@ -76,8 +89,9 @@ function ReactDropZone() {
  
                 
                 </div>
-                <div className="flex justify-center pt-7 rounded">
-                <a onClick={() => executeInst((window as any).solana,state.connection)} className={"  text-white py-2 px-4 inline-flex items-center rounded cursor-pointer shadow-2xl   " +(airdropBtn === true ? "bg-indigo-600 hover:bg-indigo-700 ":"bg-gray-400 pointer-events-none") }>Initiate Airdrop</a>
+                <div className="flex pt-7 rounded">
+                <a onClick={() => airdropInitate()} className={"  text-white py-2 px-4 inline-flex items-center rounded cursor-pointer shadow-2xl   " +(airdropBtn === true ? "bg-indigo-600 hover:bg-indigo-700 ":"bg-gray-400 pointer-events-none") }>Initiate Airdrop</a>
+              
             </div>
 
         </div>

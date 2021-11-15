@@ -24,7 +24,7 @@ const ResultTable = (props:any) => {
   rel="stylesheet"
   href="https://fonts.googleapis.com/icon?family=Material+Icons"
 />
-            <MaterialTable columns={columns} data ={state.transferResult} options={{search:false, paginationType:"stepped", showFirstLastPageButtons: false, paginationPosition:"bottom", addRowPosition:"first", exportButton:true,
+            <MaterialTable title="Transaction's Details" columns={columns} data ={state.transferResult} options={{search:false, paginationType:"stepped", showFirstLastPageButtons: false, paginationPosition:"bottom", addRowPosition:"first", exportButton:true,
         rowStyle: rowData => ({
           backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
         })}}  />

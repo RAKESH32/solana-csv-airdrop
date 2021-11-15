@@ -10,7 +10,7 @@ interface State {
     selectedToken:string;
     result:string;
     transferResult:any[];
- 
+    
 }
 
 export const state:State= {

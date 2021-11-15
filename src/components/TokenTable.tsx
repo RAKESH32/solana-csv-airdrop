@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MaterialTable from 'material-table'
 import { state } from '../State';
-import { Button } from '@material-ui/core';
 
  function TokenTable({selectToken}: any) {
 
@@ -13,7 +12,7 @@ import { Button } from '@material-ui/core';
         {title:"Balance",field:"Balance",emptyValue:()=><em>null</em>}
     ];
 
-    const [selectedRow, setSelectedRow] = useState("");
+    const [selectedRow, setSelectedRow] = useState("0");
 
     function afterRowClick(id:string,tokenName:string){
 
@@ -25,7 +24,7 @@ import { Button } from '@material-ui/core';
 
     return   (
         <div>
-            <MaterialTable columns={columns} data ={state.walletData}  onRowClick={((evt, selectedRow) => afterRowClick(selectedRow.tableData.id,selectedRow.TName))} options={{search:false, paginationType:"stepped", showFirstLastPageButtons: false, paginationPosition:"bottom", addRowPosition:"first",
+            <MaterialTable title="Wallet's Available Token" columns={columns} data ={state.walletData}  onRowClick={((evt, selectedRow) => afterRowClick(selectedRow.tableData.id,selectedRow.TName))} options={{search:false, paginationType:"stepped", showFirstLastPageButtons: false, paginationPosition:"bottom", addRowPosition:"first",
         rowStyle: rowData => ({
           backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
         })}}  />
