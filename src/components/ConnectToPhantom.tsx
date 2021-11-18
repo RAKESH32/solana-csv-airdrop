@@ -88,7 +88,7 @@ const ConnectToPhantom = ({setFirstStep}: any) => {
 
 
         return(
-          <a onClick={connectHandler} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex items-center rounded-full cursor-pointer mt-4 shadow-2xl">
+          <a onClick={connectHandler} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex items-center rounded-full cursor-pointer mt-1 shadow-2xl">
           <svg className="mr-3" width="32pt" height="32pt" viewBox="0 0 640.000000 640.000000"
            preserveAspectRatio="xMidYMid meet">
           <g transform="translate(0.000000,640.000000) scale(0.100000,-0.100000)"

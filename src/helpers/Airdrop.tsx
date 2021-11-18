@@ -36,7 +36,7 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
 
   const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
   
-  var instructions: web3.TransactionInstruction[] = []; 
+  var instructions: web3.TransactionInstruction[] = state.instructions; 
 
   
   if (receiverAccount === null) {
@@ -64,7 +64,6 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
       amount
     )
   );
-  state.instructions =[];
   state.instructions=instructions;
 
   callback(to,amount,"Success","");
@@ -97,6 +96,7 @@ export async function transfer(tokenMintAddress: string, wallet: Wallet, to: str
   console.log(transactionSignature);
 
   await connection.confirmTransaction(transactionSignature);
+  
 
       }
 
@@ -120,7 +120,7 @@ export async function getTokenDetails(wallet: Wallet)
       data.push({
           TName: TokenData.value[i].account.data.parsed.info.mint,
           TAcc:TokenData.value[i].pubkey.toString(),
-          Balance:TokenData.value[i].account.data.parsed.info.tokenAmount.amount
+          Balance:TokenData.value[i].account.data.parsed.info.tokenAmount.amount/1000000000
       })
   }
   state.walletData=data;

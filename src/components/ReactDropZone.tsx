@@ -6,7 +6,7 @@ import { state } from "../State";
 
 const Papa = require('papaparse');
 
-function ReactDropZone({setThirdStep}: any) {
+function ReactDropZone({enableResult}: any) {
 
     var connection = state.connection;
 
@@ -19,12 +19,13 @@ function ReactDropZone({setThirdStep}: any) {
     function airdropInitate()
     {
         executeInst((window as any).solana,state.connection);
-        setThirdStep(4);
+        enableResult(true);
     }
 
     const onDrop = useCallback(
         (acceptedFiles) => {
             console.log(acceptedFiles);
+            state.instructions =[];
             acceptedFiles.forEach((file: File) => {
                 const reader = new FileReader();
                 reader.abort = () => setFileStatus("File Reading Aborted");
@@ -43,7 +44,7 @@ function ReactDropZone({setThirdStep}: any) {
                     setFileProgress(70);
                 
                 state.transferResult=[];
-                transfer(state.selectedToken,(window as any).solana,obj.accountNo,connection,obj.amount,callback);
+                transfer(state.selectedToken,(window as any).solana,obj.accountNo,connection,obj.amount*1000000000,callback);
                 
                 setFileStatus("File Reading Done");
                 if(state.selectedToken !="")
@@ -56,9 +57,7 @@ function ReactDropZone({setThirdStep}: any) {
                 };
                 reader.readAsBinaryString(file);
                 console.log(resultData);
-                setUploadedFile(file.name);
-                setThirdStep(3);
-            });
+                setUploadedFile(file.name);            });
         },
         []
     );
@@ -107,7 +106,7 @@ function callback(accountNo:string,amount:number,result:string,error:string) {
 
     state.transferResult.push({
         ReceiverAcc: accountNo,
-        Amt:amount,
+        Amt:amount/1000000000,
         Result: result,
         Error: error
     });

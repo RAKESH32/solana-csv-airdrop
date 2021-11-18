@@ -18,8 +18,8 @@ function App() {
   const [resultDisplay,setResultDisplay] = useState("hidden");
   const[selectedToken,setSelectedToken]=useState("");
   const[steps,setSteps] = useState(0);  
-  const labelArray= ['Step 1','Step 2','Step 3','Step 4'];
   const [selTokenDisplay,setselTokenDisplay] = useState(false);
+  const [enableResult,setEnableResult] = useState(false);
 
   function WDetailBtnClick() {
      setTokenDisplay("block");
@@ -42,7 +42,7 @@ function App() {
  }
 
   return (
-    <div className="App h-full pt-1 pb-36 pl-">
+    <div className="App h-full pt-4 pb-40 pl-">
       <div className="float-right pr-4 font-sans">
     <ConnectToPhantom setFirstStep={setSteps}/>
     </div>
@@ -55,26 +55,26 @@ function App() {
     {/* <button onClick={() => RDetailBtnClick() }>Result Table</button> */}
     <div className={'fixed z-10 flex justify-center items-center w-20 left-1/2 pr-24 pt-20 ' + tokenDisplay }>
     <TokenTable selectToken={setSelectedToken} />
-    <div className="fixed w-28 text-center bottom-28 bg-indigo-600 mb-2">
-        <Button onClick={() => tokenSubmit()} >Select</Button>
+    <div className="fixed w-28 text-center bottom-28 bg-indigo-600 mb-2 ">
+        <Button onClick={() => tokenSubmit()} ><span className="text-white">Select</span></Button>
       </div>
     </div>
     <div className={'fixed z-10 flex justify-center items-center w-20 left-1/2 pr-24 pt-24 ' + resultDisplay }>
     <ResultTable trigger={true} >
     </ResultTable>
     <div className="fixed w-28 text-center bottom-24 bg-indigo-600 mb-2 ">
-        <Button onClick={() => setResultDisplay("hidden")}>Select</Button>
+        <Button onClick={() => setResultDisplay("hidden")} ><span className="text-white">Select</span></Button>
       </div>
     </div>
-    <div className="h-5/6 w-4/12 bg-gray-200 rounded-md cursor-pointer focus:outline-none items-center shadow-2xl ml-96 mt-24 p-5">
+    <div className="h-5/6 w-4/12 bg-gray-200 rounded-md cursor-pointer focus:outline-none items-center shadow-2xl ml-96 mt-16 p-5">
     <a onClick={WDetailBtnClick} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex cursor-pointer mt-1 ml-2 mb-2 shadow-2xl">Token in Wallet</a>
     {/* <span className="text-sm">Selected Token:</span> */}
       <Tippy animation={'scale'} theme={'material'} interactive={true} followCursor={true} content={<div className="text-xs">{selectedToken}</div>} >
     <div className={"text-sm pl-24 "+ (selTokenDisplay === true ? " ":" hidden ")}>Selected Token : {selectedToken.substring(0,5)+".."+selectedToken.substring(selectedToken.length-5,selectedToken.length-1)}</div>
     </Tippy>
   
-   <ReactDropZone setThirdStep={setSteps}/> 
-   <a onClick={RDetailBtnClick} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex cursor-pointer float-right relative -top-10">
+   <ReactDropZone enableResult={setEnableResult}/> 
+   <a onClick={RDetailBtnClick} className={"text-white py-2 px-4 rounded inline-flex cursor-pointer float-right relative -top-10  "+(enableResult === true ? "bg-indigo-600 hover:bg-indigo-700 ":"bg-gray-400 pointer-events-none")}>
           Result Table</a>
    </div>
 
