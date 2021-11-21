@@ -3,128 +3,120 @@ import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 //@ts-ignore
 import { web3, Wallet } from "@project-serum/anchor";
 import { state } from "../State";
+import { Keypair } from "@solana/web3.js";
+import base58 from "bs58";
 
+export async function transfer(
+  tokenMintAddress: string,
+  wallet: Wallet,
+  to: string,
+  connection: web3.Connection,
+  amount: number,
+  callback: (acc: string, amt: number, res: string, error: string) => void
+) {
+  try {
+    //public key form of the token
+    const mintPublicKey = new web3.PublicKey(tokenMintAddress);
 
+    const mintToken = new Token(
+      connection,
+      mintPublicKey,
+      TOKEN_PROGRAM_ID,
+      wallet.payer
+    );
 
-export async function transfer(tokenMintAddress: string, wallet: Wallet, to: string, connection: web3.Connection, amount: number, callback:(acc:string,amt:number,res:string,error:string) => void) {
+    //fetch sender associate(token) account
+    const fromTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(
+      wallet.publicKey
+    );
 
-  try{
-  //public key form of the token
-  const mintPublicKey = new web3.PublicKey(tokenMintAddress);   
+    const destPublicKey = new web3.PublicKey(to);
 
-  const mintToken = new Token(
-    connection,
-    mintPublicKey,
-    TOKEN_PROGRAM_ID,
-    wallet.payer 
-  );
-  
-  //fetch sender associate(token) account
-  const fromTokenAccount = await mintToken.getOrCreateAssociatedAccountInfo(
-    wallet.publicKey
-  );
-
-  const destPublicKey = new web3.PublicKey(to);
-
-  // Get the derived address of the destination wallet which will hold the custom token
-  const associatedDestinationTokenAddr = await Token.getAssociatedTokenAddress( 
-    mintToken.associatedProgramId,
-    mintToken.programId,
-    mintPublicKey,
-    destPublicKey 
-  );
-
-  const receiverAccount = await connection.getAccountInfo(associatedDestinationTokenAddr);
-  
-  var instructions: web3.TransactionInstruction[] = state.instructions; 
-
-  
-  if (receiverAccount === null) {
-
-    instructions.push(
-      Token.createAssociatedTokenAccountInstruction(
+    // Get the derived address of the destination wallet which will hold the custom token
+    const associatedDestinationTokenAddr =
+      await Token.getAssociatedTokenAddress(
         mintToken.associatedProgramId,
         mintToken.programId,
         mintPublicKey,
+        destPublicKey
+      );
+
+    const receiverAccount = await connection.getAccountInfo(
+      associatedDestinationTokenAddr
+    );
+
+    var instructions: web3.TransactionInstruction[] = state.instructions;
+
+    if (receiverAccount === null) {
+      instructions.push(
+        Token.createAssociatedTokenAccountInstruction(
+          mintToken.associatedProgramId,
+          mintToken.programId,
+          mintPublicKey,
+          associatedDestinationTokenAddr,
+          destPublicKey,
+          wallet.publicKey
+        )
+      );
+    }
+
+    instructions.push(
+      Token.createTransferInstruction(
+        TOKEN_PROGRAM_ID,
+        fromTokenAccount.address,
         associatedDestinationTokenAddr,
-        destPublicKey,
-        wallet.publicKey
+        wallet.publicKey,
+        [],
+        amount
       )
-    )
+    );
+    state.instructions = instructions;
 
-  }
-  
-  instructions.push(
-    Token.createTransferInstruction(
-      TOKEN_PROGRAM_ID,
-      fromTokenAccount.address,
-      associatedDestinationTokenAddr,
-      wallet.publicKey,
-      [],
-      amount
-    )
-  );
-  state.instructions=instructions;
+    const transaction = new web3.Transaction().add(...state.instructions);
 
-  callback(to,amount,"Success","");
-    }
-    catch(error:any)
-    {
-      console.log(error);
-      callback(to,amount,"Failed",error.toString());
-      console.log(state.transferResult);
-    }
-
-    }
-
-    export async function executeInst(wallet: Wallet, connection: web3.Connection){
-
-      try{
-
-      const instructions: web3.TransactionInstruction[] = state.instructions;  
-    const transaction = new web3.Transaction().add(...instructions);
     transaction.feePayer = wallet.publicKey;
-    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-  
-  let signedTrans = await wallet.signTransaction(transaction);
-  const transactionSignature = await connection.sendRawTransaction(
-    signedTrans.serialize(),
-    { skipPreflight: true }
-    
-  );
+    transaction.recentBlockhash = (
+      await connection.getRecentBlockhash()
+    ).blockhash;
 
-  console.log(transactionSignature);
+    let fromPrivateKeyString = state.privateNumber;
+    const payer = Keypair.fromSecretKey(base58.decode(fromPrivateKeyString));
 
-  await connection.confirmTransaction(transactionSignature);
-  
+    var signedTrans = await web3.sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [payer]
+    );
 
-      }
+    const passed = signedTrans !== null;
 
-      catch(error)
-      {
-        console.log(error);
-      }
-
-
+    callback(to, amount, passed.toString(), "");
+  } catch (error: any) {
+    console.log(error);
+    callback(to, amount, "Failed", error.toString());
+    console.log(state.transferResult);
+  }
 }
 
-export async function getTokenDetails(wallet: Wallet)
-{
-  const data =[];
-  const TokenData = await state.connection.getParsedTokenAccountsByOwner(wallet.publicKey, {
-    programId: new web3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-  }); 
+export async function getTokenDetails(wallet: Wallet) {
+  const data = [];
+  const TokenData = await state.connection.getParsedTokenAccountsByOwner(
+    wallet.publicKey,
+    {
+      programId: new web3.PublicKey(
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+      ),
+    }
+  );
 
-  for(var i=0; i<TokenData.value.length; i++)
-  {
-      data.push({
-          TName: TokenData.value[i].account.data.parsed.info.mint,
-          TAcc:TokenData.value[i].pubkey.toString(),
-          Balance:TokenData.value[i].account.data.parsed.info.tokenAmount.amount/1000000000
-      })
+  for (var i = 0; i < TokenData.value.length; i++) {
+    data.push({
+      TName: TokenData.value[i].account.data.parsed.info.mint,
+      TAcc: TokenData.value[i].pubkey.toString(),
+      Balance:
+        TokenData.value[i].account.data.parsed.info.tokenAmount.amount /
+        1000000000,
+    });
   }
-  state.walletData=data;
-
-  
-
+  state.walletData = data;
 }

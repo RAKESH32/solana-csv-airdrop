@@ -2,6 +2,15 @@ import { web3 } from "@project-serum/anchor";
 import { useEffect, useState } from "react";
 import { getTokenDetails } from "../helpers/Airdrop";
 import { state } from '../State';
+import Select from 'react-select';
+
+const envment = [
+  {value:'devnet.com',label:'DEVNET'},
+  {value:'devnet.com',label:'TESTNET'},
+  {value:'devnet.com',label:'MAINNET'}
+];
+
+
 
 type Event = "connect" | "disconnect";
 
@@ -25,6 +34,7 @@ const ConnectToPhantom = ({setFirstStep}: any) => {
     }, []);
 
     const [connected,setConnected] = useState(false);
+    const [env,setEnv] = useState();
 
     useEffect(() => {
         phantom?.on("connect", () => {
@@ -56,7 +66,7 @@ const ConnectToPhantom = ({setFirstStep}: any) => {
             return(
                 // <button onClick={disconnectHandler}>Disconnect from Phantom</button>
                 <div>
-          <a onClick={disconnectHandler} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex items-center rounded-full cursor-pointer mt-4 shadow-2xl">
+          <a onClick={disconnectHandler} className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded inline-flex items-center rounded-full cursor-pointer mt-1 shadow-2xl">
           <svg className="mr-3" width="32pt" height="32pt" viewBox="0 0 640.000000 640.000000"
            preserveAspectRatio="xMidYMid meet">
           <g transform="translate(0.000000,640.000000) scale(0.100000,-0.100000)"
@@ -81,7 +91,10 @@ const ConnectToPhantom = ({setFirstStep}: any) => {
           </svg>
             Disconnect from Phantom
           </a>
-         
+         {/* <div className="rounded bg-white">
+          <Select options={envment} defaultValue={{value:'devnet.com',label:'DEVNET'}}  className="mt-2 text-center" ></Select>
+          </div> */}
+
           </div>
             );
         }
